@@ -1,5 +1,6 @@
 import numpy as np
 import collections
+import math
 
 class state:
 	def __init__(self,cost,depth,parent,positions,move):
@@ -58,15 +59,14 @@ def backtrack(goal_state, start_state):
 	curr_state = goal_state 
 	while not ((curr_state.positions == start_state.positions).all()):
 		solution.insert(0,curr_state.move)
-		print(curr_state.positions)
+		# print(curr_state.positions)
 		curr_state = curr_state.parent
-	print(start_state.positions)
+	# print(start_state.positions)
 	return solution
 
 
 ''' RUNS BREADTH-FIRST SEARCH'''
 def bfs(start_state):
-	print('starting BFS')
 	queue = []
 	visited = []
 	queue.append(start_state)
@@ -88,16 +88,17 @@ def bfs(start_state):
 	return curr_state.cost, backtrack(curr_state, start_state)
 
 ''' RUNS DEPTH-FIRST SEARCH'''
-def dfs(start_state):
-	print('starting DFS')
+def dfs(start_state, *args):
+	max_depth = math.inf
+	if args:
+		max_depth = args[0]
 	queue = []
 	visited = []
+	queue.append(start_state)
 	visited.append(start_state.positions)
 	curr_state = start_state
 
-	k = 0
-	while not (curr_state.positions == goal_state).all():
-		k+=1
+	while (not (curr_state.positions == goal_state).all()):
 		toadd = {}
 		for i in ['L', 'R', 'U', 'D']:
 			temp, moved_val = move(curr_state, i, visited)
@@ -106,20 +107,45 @@ def dfs(start_state):
 		try: 
 			minstate = min(toadd.keys())
 			curr_state = toadd[minstate]
-			queue.append(toadd[minstate])
-			visited.append(toadd[minstate].positions)
+			if curr_state.depth <= max_depth:
+				queue.append(toadd[minstate])
+				visited.append(toadd[minstate].positions)
 		except:
-			curr_state = queue.pop()
-	
-	
+			try:
+				curr_state = queue.pop()
+			except:
+				return None, None
+
+		if curr_state.depth > max_depth:
+			try:
+				curr_state = queue.pop()
+			except:
+				return None, None
 	return curr_state.cost, backtrack(curr_state, start_state)
+
+''' RUNS ITERATIVE-DEEPENING SEARCH COST SEARCH'''
+def ids(start_state, max_depth):
+	depth  = 0
+	cost = None
+	while depth <= max_depth:
+		while cost is None:
+			if depth > max_depth:
+				return None, None
+			cost, solution = dfs(start_state, depth)
+			if cost:
+				return cost, solution
+			depth+=1
 
 def main():
 	global goal_state
 	goal_state = [[0,1,2],[5,4,3]]
-	start_state = state(0, 1, None, np.array(([[1,4,2],[5,3,0]])), None)
+	start_state = state(0, 0, None, np.array(([[1,4,2],[5,3,0]])), None)
+	cost, solution = bfs(start_state)
+	print('----BFS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
 	cost, solution = dfs(start_state)
-	print('COST: ', cost, '\nSOLUTION: ', solution)
+	print('----DFS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
+	cost, solution = ids(start_state, 3)
+	print('----IDS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
 
 if __name__ == "__main__":
 	main()
