@@ -76,6 +76,9 @@ def bfs(start_state):
 
 	while not (curr_state.positions == goal_state).all():
 		curr_state = queue.pop(0)
+		print(curr_state.positions)
+		if not (curr_state.positions == goal_state).all():
+			print('->')
 		toadd = {}
 		for i in ['L', 'R', 'U', 'D']:
 			temp = move(curr_state, i, visited)
@@ -101,6 +104,11 @@ def uniform(start_state):
 		curr_state = queue[min(queue.keys())].pop(0)
 		if (len(queue[min(queue.keys())]) == 0):
 			queue.pop(min(queue.keys()))
+			print(curr_state.positions)
+		else:
+			print(curr_state.positions)
+		if not (curr_state.positions == goal_state).all():
+			print('->')
 		toadd = {}
 		for i in ['L', 'R', 'U', 'D']:
 			temp = move(curr_state, i, visited)
@@ -129,8 +137,13 @@ def dfs(start_state, *args):
 	queue.append(start_state)
 	visited.append(start_state.positions)
 	curr_state = start_state
+	to_print = []
+	to_print.append(start_state)
 
 	while (not (curr_state.positions == goal_state).all()):
+		if curr_state not in to_print:
+			to_print.append(curr_state)
+
 		toadd = {}
 		for i in ['L', 'R', 'U', 'D']:
 			temp = move(curr_state, i, visited)
@@ -146,23 +159,36 @@ def dfs(start_state, *args):
 			try:
 				curr_state = queue.pop()
 			except:
+				for i in to_print:
+					print(i.positions)
+					print('->')
 				return None, None
 
 		if curr_state.depth > max_depth:
 			try:
 				curr_state = queue.pop()
 			except:
+				for i in to_print:
+					print(i.positions)
+					print('->')
 				return None, None
+	if max_depth<5:
+		for i in to_print:
+			print(i.positions)
+			print('->')
+		print(curr_state.positions)
 	return curr_state.cost, backtrack(curr_state, start_state)
 
 ''' RUNS ITERATIVE-DEEPENING SEARCH COST SEARCH'''
 def ids(start_state, max_depth):
 	depth  = 0
 	cost = None
+	print_list = []
 	while depth <= max_depth:
 		while cost is None:
 			if depth > max_depth:
 				return None, None
+			print('depth: ', depth)
 			cost, solution = dfs(start_state, depth)
 			if cost:
 				return cost, solution
@@ -172,14 +198,21 @@ def main():
 	global goal_state
 	goal_state = [[0,1,2],[5,4,3]]
 	start_state = state(0, 0, None, np.array(([[1,4,2],[5,3,0]])), None, None)
+	print('----BFS----')
 	cost, solution = bfs(start_state)
-	print('----BFS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
+	print('COST: ', cost, '\nSOLUTION: ', solution, '\n')
+
+	print('----UNIFORM----')
 	cost, solution = uniform(start_state)
-	print('----UNIFORM----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
+	print('COST: ', cost, '\nSOLUTION: ', solution, '\n')
+
+	print('----DFS----')
 	cost, solution = dfs(start_state)
-	print('----DFS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
+	print('COST: ', cost, '\nSOLUTION: ', solution, '\n')
+
+	print('----IDS----')
 	cost, solution = ids(start_state, 3)
-	print('----IDS----\nCOST: ', cost, '\nSOLUTION: ', solution, '\n')
+	print('COST: ', cost, '\nSOLUTION: ', solution, '\n')
 
 if __name__ == "__main__":
 	main()
