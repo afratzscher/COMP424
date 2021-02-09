@@ -122,7 +122,7 @@ def uniform(start_state):
 			except:
 				currlist = []
 			currlist.append(ordered_add[key])
-			# currlist.sort(key=lambda x: x.move, reverse=False)
+			# currlist.sort(key=lambda x: x.move, reverse=False) #if wanted to sort sublist of cost 2 by moved piece
 			queue[ordered_add[key].cost] = currlist
 	
 	return curr_state.cost, backtrack(curr_state, start_state)

@@ -4,19 +4,10 @@ from itertools import permutations
 from tabulate import tabulate
 from random import shuffle
 
-# Also, you could set a max number of steps in greedy hill climbing before timing out, to help with computational costs. For 100 cities, it's been takign about 100 steps give or take, to reach a local minimum.
-# [Wednesday 11:00 PM] Jackie Cheung, Professor
-#     Felix Simard, computing the optimal solution is infeasible, but running a local search from a random starting point should be feasible. In my Python implementation, it takes less than a minute to do local search for one instance involving 100 cities. This might depend on your luck in randomly generating TSP instances, but I wouldn't expect one run to take more than 1-2 minutes. 
-# ​[Wednesday 11:00 PM] Jackie Cheung, Professor
-#     If you could figure out if it's a memory issue or a computational efficiency issue, it might help with debugging.
-# <https://teams.microsoft.com/l/message/19:17f7bc34c62e4a43ab1910ee19d5480b@thread.tacv2/1612411204710?tenantId=cd319671-52e7-4a68-afa9-fcf8f89f09ea&amp;groupId=84a86ffe-1e97-4399-8956-52e5df1aaa34&amp;parentMessageId=1612375063488&amp;teamName=Winter 2021 COMP 424_Group&amp;channelName=A1&amp;createdTime=1612411204710>
-
 def generatePoints(numCities):
 	x = np.random.uniform(0.0, 1.0, numCities)
 	y = np.random.uniform(0.0, 1.0, numCities)
 
-	# x=np.array((0,1,1,0))
-	# y=np.array((0,0,1,1))
 	return list(zip(x,y))
 
 def euclidean(a,b):
@@ -67,44 +58,14 @@ def greedy(distances, randcost, path, numCities):
 	curr_cost = best_cost
 	curr_path = path
 	neigh = 0
-
-	# improved = True
-	# path.append(0)
-	# while improved:
-	# 	iters+=1
-	# 	improved = False
-	# 	for i in range(1, len(path)-2):
-	# 		for j in range(i+1, len(path)):
-	# 			if j-i == 1: continue
-	# 			neig_path = path[:]
-	# 			neig_path[i:j] = path[j-1:i-1:-1]
-				
-	# 			#calculate cost
-	# 			prev = 0
-	# 			neig_cost = 0
-	# 			for idx in neig_path:
-	# 				neig_cost +=  distances[prev][idx]
-	# 				prev = idx
-	# 			neig_cost += distances[idx][0]
-
-	# 			#if better, replace
-	# 			if neig_cost < best_cost:
-	# 				best_cost = neig_cost
-	# 				path = neig_path	
-	# 				improved = True
 		
 	# get neighbour min
 	# always start at and end at first vertex
 	while True:
 		for i in range(1, numCities):
 			for j in range(i+1, numCities):
-				neigh+=1
-				if i == 0:
-					neig_path = [path[0]]
-					neig_path.extend(path[1:j+1][::-1])
-				else:
-					neig_path = (path[0:i])
-					neig_path.extend(path[i:j+1][::-1])
+				neig_path = (path[0:i])
+				neig_path.extend(path[i:j+1][::-1])
 				if j != (numCities-1):
 					neig_path.extend(path[j+1:])
 				
@@ -120,13 +81,12 @@ def greedy(distances, randcost, path, numCities):
 					curr_cost = neig_cost
 					curr_path = neig_path	
 		if curr_cost >= best_cost:
-			print(iters)
+			# print(iters)
 			return best_cost
 		else:
 			best_cost = curr_cost
 			path = curr_path
 			iters+=1
-	print(iters)
 	return best_cost
 
 def main():
@@ -160,7 +120,7 @@ def main():
 	randCosts = []
 	greedyCosts = []
 	
-	for i in range(0, 5): # runs 100 times
+	for i in range(0, 100): # runs 100 times
 		nodes = generatePoints(numCities)
 		distances = getDistances(nodes, numCities)
 		randcost, randpath = randomTour(distances, numCities)
@@ -173,6 +133,5 @@ def main():
 		['Greedy', np.min(greedyCosts), np.max(greedyCosts), np.mean(greedyCosts), np.std(greedyCosts)]], 
 		headers=['', 'Min', 'Max', 'Mean', 'Std'], tablefmt='orgtbl'))
 	
-		
 if __name__ == "__main__":
 	main()
