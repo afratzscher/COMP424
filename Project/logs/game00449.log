@@ -1,0 +1,11 @@
+# Server version 0.08 running on afs-macbook-pro.fios-router.home:8123
+# Game ID: 449
+# Board class: pentago_twist.PentagoBoard
+# Timeout: 20000
+# First Move Timeout: 30000
+# Date: Tue Apr 13 23:06:55 EDT 2021
+# Player 1: Player-0, '260705446', running on localhost
+# Player 2: Player-1, 'ALPHA', running on localhost
+START Player-0 260705446
+START Player-1 ALPHA
+0 0 0 0 0

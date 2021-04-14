@@ -1,0 +1,24 @@
+# Server version 0.08 running on afs-macbook-pro.fios-router.home:8123
+# Game ID: 53
+# Board class: pentago_twist.PentagoBoard
+# Timeout: 20000
+# First Move Timeout: 30000
+# Date: Sat Apr 10 23:56:51 EDT 2021
+# Player 1: Player-0, 'Alpha/beta player (test)', running on localhost
+# Player 2: Player-1, '260705446', running on localhost
+START Player-0 Alpha/beta player (test)
+START Player-1 260705446
+0 0 0 0 0
+0 4 0 1 1
+0 1 0 0 0
+2 2 0 1 1
+0 1 0 0 0
+1 0 0 1 1
+0 3 0 0 0
+2 0 0 1 1
+0 2 0 0 0
+3 0 0 1 1
+0 5 0 0 0
+4 0 0 0 1
+GAMEOVER WINNER 1
+# Game ended: Sat Apr 10 23:57:11 EDT 2021

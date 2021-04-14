@@ -12,151 +12,139 @@ import pentago_twist.PentagoMove;
 /** A player file submitted by a student. */
 public class StudentPlayer extends PentagoPlayer {
 
-    /**
-     * You must modify this constructor to return your student number. This is
-     * important, because this is what the code that runs the competition uses to
-     * associate you with your agent. The constructor should do nothing else.
-     */
-    public StudentPlayer() {
-        super("260705446");
-    }
+	/**
+	 * You must modify this constructor to return your student number. This is
+	 * important, because this is what the code that runs the competition uses to
+	 * associate you with your agent. The constructor should do nothing else.
+	 */
+	public StudentPlayer() {
+		super("260705446");
+	}
 
-    /**
-     * This is the primary method that you need to implement. The ``boardState``
-     * object contains the current state of the game, which your agent must use to
-     * make decisions.
-     */
-    public int [][] board = new int[6][6];
-    public int max_score=0;
-    public int score;
-    public int id = 0;
-    public static int WHITE = 1;
-    public static int BLACK = 2;
-    public static int BLANK = 0;
-    public static int BOARD_SIZE = 6;
-    private static final int INFINITY = 1000000000;
-    
-    public int bestMove(PentagoBoardState tmp,long starttime,long endtime)
-    {
-    	board = MyTools.getBoard(tmp);
-    	max_score=0;
-    	id = 0;
-    	int bestscore = 0; 
-    	 if(tmp.getOpponent()==1)
-    		 max_score = -INFINITY;
-    	 if(tmp.getOpponent()==0)
-    		 max_score = INFINITY;
-    	 if(tmp.getOpponent()==1)
-    		 bestscore = -INFINITY;
-    	 if(tmp.getOpponent()==0)
-    		 bestscore = INFINITY;
-    	PentagoBoardState tmp2 =(PentagoBoardState) tmp.clone();
-    	
-        ArrayList<PentagoMove> moves_tmp = tmp.getAllLegalMoves();
-        for(int i=0;i<moves_tmp.size();i++)
-         {
-        	long current = System.currentTimeMillis();
-        	if (current > endtime) {
-        		System.out.println("time limit 2s.");
-				return id;
+	/**
+	 * This is the primary method that you need to implement. The ``boardState``
+	 * object contains the current state of the game, which your agent must use to
+	 * make decisions.
+	 */
+	public int maxScore=0;
+	public int score;
+	public int idx = 0;
+	public static int WHITE = 0;
+	public static int BLACK = 1;
+	public static int BLANK = 2;
+	public static int BOARD_SIZE = 6;
+	private static final int INFINITY = 1000000000;
+	private static int numMoves = 0;
+
+	public int getOpponent(PentagoBoardState temp) { return (temp.getTurnPlayer() == WHITE) ? BLACK : WHITE; }
+
+	public int bestMove(PentagoBoardState temp, long start_time, long end_time)
+	{
+		maxScore=0;
+		idx = 0;
+		int bestScore = 0; 
+
+		// get colour I am playing -> 0 = white, 1 = black
+		int colour = temp.getTurnPlayer();
+
+		if(getOpponent(temp)==1)
+			maxScore = -INFINITY;
+		if(getOpponent(temp)==0)
+			maxScore = INFINITY;
+		if(getOpponent(temp)==1)
+			bestScore = -INFINITY;
+		if(getOpponent(temp)==0)
+			bestScore = INFINITY;
+
+		// have copy of moves
+		ArrayList<PentagoMove> moves_copy = temp.getAllLegalMoves();
+
+		PentagoBoardState temp2 = (PentagoBoardState) temp.clone();
+
+		maxScore = 0;
+		idx = 0;
+
+		// go through all moves
+		for (int i = 0; i < moves_copy.size(); i++)
+		{
+			long current_time = System.currentTimeMillis();
+			// if >endtime (1900 ms), return best so far
+			if (current_time > end_time)
+			{
+				System.out.println("Exceeded time limit");
+				return idx;
 			}
-			
-        	 tmp2 =(PentagoBoardState) tmp.clone();
-        	 PentagoMove testMove = moves_tmp.get(i);
-        	 tmp2.processMove(testMove);
-        	 score = MyTools.alphabeta(tmp2, 1-testMove.getPlayerID(),endtime, -INFINITY, INFINITY, 1);
-        		 if(tmp.getOpponent()==1)
-        		 {
-        			 // System.out.println(i+":score:"+score);
-        			 if(score>max_score)
-        			 {
-        				 max_score=score;
-        				 //System.out.println(i+":score:"+score);
-        				 id = i;
-        			 }
-        			 if(score == max_score) {
-        				 if(bestscore < MyTools.getScore(MyTools.getBoard(tmp2)))
-        				 {
-        					 bestscore =  MyTools.getScore(MyTools.getBoard(tmp2));
-        					 id = i;
-        					// System.out.println("  test:"+bestscore);
-        				 }
-        			 }
-        		 }
-        		 if(tmp.getOpponent()==0)
-        		 {
-        			 //System.out.println(i+":score:"+score);
-        			 if(score<max_score)
-        			 {
-        				 max_score = score;
-        				 //System.out.println(i+":score:"+score);
-        				 id = i;
-        			 }
-        			 if(score == max_score) {
-        				 if(bestscore > MyTools.getScore(MyTools.getBoard(tmp2)))
-        				 {
-        					 bestscore =  MyTools.getScore(MyTools.getBoard(tmp2));
-        					 id = i;
-        					// System.out.print("  test:"+bestscore);
-        				 }
-        			 }
-        		 }
-         }
-        return id ;
-    }
-    public Move chooseMove(PentagoBoardState boardState) {
-        // You probably will make separate functions in MyTools.
-        // For example, maybe you'll need to load some pre-processed best opening
-        // strategies...
-        //MyTools.getSomething();
-        ArrayList<PentagoMove> moves = boardState.getAllLegalMoves();
-        PentagoBoardState tmp =(PentagoBoardState) boardState.clone();
-        long starttime = System.currentTimeMillis();
-    	long endtime = starttime + 1900;
-        int bestChoose;
-        bestChoose = bestMove(tmp,starttime,endtime);
-        
-        Move myMove = moves.get(bestChoose);
-        //tmp.processMove(moves.get(bestChoose));
-        //tmp.printBoard();
-        //System.out.println("player_student:"+bestChoose+"  "+myMove.getPlayerID());
-        return myMove;
-    }
+
+			// reset board
+			temp2 = (PentagoBoardState) temp.clone();
+			PentagoMove temp_move = moves_copy.get(i); // get move at index i
+
+			// add move
+			temp2.processMove(temp_move); // puts move on board -> get exception if invalid move
+
+			// get board in bitboard (depends on colour)
+			long[] boards = MyTools.getBitBoard(temp2);
+			long myBoard; long yourBoard;
+
+			if (colour == 0)
+			{
+				myBoard = boards[1];
+				yourBoard = boards[0];
+			}
+			else
+			{
+				myBoard = boards[0];
+				yourBoard = boards[1];
+			}
+			int depth = 5; // depth of 5 used
+			boolean myTurn = true;
+
+			// get score from move using negamax search (instead of alpha-beta search)
+			score = MyTools.negamax(depth, -INFINITY, INFINITY, end_time, myBoard, yourBoard, myTurn);
+
+			//update index if better score
+			if(getOpponent(temp)==1)
+			{
+				if(score>maxScore)
+				{
+					maxScore=score;
+					idx = i;
+				}
+			}
+			if(getOpponent(temp)==0)
+			{
+				if(score<maxScore)
+				{
+					maxScore = score;
+					idx = i;
+				}
+			}
+		}
+		return idx;
+	}
+
+	public Move chooseMove(PentagoBoardState boardState) {
+		// You probably will make separate functions in MyTools.
+		// For example, maybe you'll need to load some pre-processed best opening
+		// strategies...
+
+		ArrayList<PentagoMove> moves = boardState.getAllLegalMoves();
+
+		// default first move is middle of first quadrant if possible
+		if (boardState.firstPlayer() == 0 && numMoves == 0 && boardState.getTurnPlayer() == 0)
+		{
+			numMoves += 1;
+			return moves.get(7);
+		}
+
+		numMoves += 1;
+		PentagoBoardState temp =(PentagoBoardState) boardState.clone();
+		long starttime = System.currentTimeMillis();
+		long endtime = starttime + 1900;
+		int bestChoice;
+		bestChoice = bestMove(temp,starttime,endtime); //gets best choice
+		Move myMove = moves.get(bestChoice);
+		//        Move myMove = boardState.getRandomMove();
+		return myMove;
+	}
 }
-//package student_player;
-//
-//import boardgame.Move;
-//
-//import pentago_twist.PentagoPlayer;
-//import pentago_twist.PentagoBoardState;
-//
-///** A player file submitted by a student. */
-//public class StudentPlayer extends PentagoPlayer {
-//
-//    /**
-//     * You must modify this constructor to return your student number. This is
-//     * important, because this is what the code that runs the competition uses to
-//     * associate you with your agent. The constructor should do nothing else.
-//     */
-//    public StudentPlayer() {
-//        super("260705446");
-//    }
-//
-//    /**
-//     * This is the primary method that you need to implement. The ``boardState``
-//     * object contains the current state of the game, which your agent must use to
-//     * make decisions.
-//     */
-//    public Move chooseMove(PentagoBoardState boardState) {
-//        // You probably will make separate functions in MyTools.
-//        // For example, maybe you'll need to load some pre-processed best opening
-//        // strategies...
-//        MyTools.getSomething();
-//
-//        // Is random the best you can do?
-//        Move myMove = boardState.getRandomMove();
-//
-//        // Return your move to be processed by the server.
-//        return myMove;
-//    }
-//}

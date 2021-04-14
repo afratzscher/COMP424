@@ -37,7 +37,7 @@ public class PentagoBoardState extends BoardState {
     private static int FIRST_PLAYER = 0;
 
     private Piece[][] board;
-    private Piece[][][] quadrants;
+    private Piece[][][] quadrants; 
     private int turnPlayer;
     private int turnNumber;
     private int winner;
@@ -110,9 +110,6 @@ public class PentagoBoardState extends BoardState {
 
     @Override
     public int firstPlayer() { return FIRST_PLAYER; }
-    
-    //TO REMOVE
-    public int getOpponent() { return (turnPlayer == WHITE) ? BLACK : WHITE; }
     
     @Override
     public Move getRandomMove() {
